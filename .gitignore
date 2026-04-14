@@ -4,6 +4,7 @@ __pycache__/
 venv/
 output/*
 !output/.gitkeep
+output_delta/
 .DS_Store
 .vscode/
 spark-warehouse/

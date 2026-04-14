@@ -47,6 +47,14 @@ Running Tests
 
 - pytest
 
+## Delta Lake Support
+
+This project also writes analytics outputs in Delta Lake format.
+
+Delta outputs are written to:
+
+output_delta/
+
 ## Tech Stack
 
 - Python

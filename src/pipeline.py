@@ -21,6 +21,7 @@ from src.transform import (
     build_order_summary,
 )
 from src.load import write_parquet, write_partitioned_parquet
+from src.load_delta import write_delta, write_partitioned_delta
 
 logger = get_logger(__name__)
 
@@ -70,5 +71,16 @@ def run_pipeline(spark, config: PipelineConfig) -> None:
     write_parquet(product_sales_df, config.product_sales_output)
     write_parquet(order_summary_df, config.order_summary_output)
 
-    logger.info("Outputs written successfully")
+    logger.info("Parquet outputs written successfully")
+
+    write_partitioned_delta(
+        sales_per_customer_df,
+        config.sales_per_customer_delta_output,
+        "country"
+    )
+    write_delta(sales_per_country_df, config.sales_per_country_delta_output)
+    write_delta(product_sales_df, config.product_sales_delta_output)
+    write_delta(order_summary_df, config.order_summary_delta_output)
+
+    logger.info("Delta outputs written successfully")
     logger.info("ETL pipeline finished")
