@@ -6,6 +6,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class PipelineConfig:
     customers_path: str = "data/sample/customers.csv"
+    customers_incremental_path: str = "data/sample/customers_incremental.csv"
     orders_path: str = "data/sample/orders.csv"
     order_items_path: str = "data/sample/order_items.csv"
     products_path: str = "data/sample/products.csv"
@@ -19,3 +20,5 @@ class PipelineConfig:
     sales_per_country_delta_output: str = "output_delta/sales_per_country"
     product_sales_delta_output: str = "output_delta/product_sales"
     order_summary_delta_output: str = "output_delta/order_summary"
+
+    customers_delta_output: str = "output_delta/customers"

@@ -7,6 +7,7 @@ from src.extract import (
     read_orders,
     read_order_items,
     read_products,
+    read_csv,
 )
 from src.transform import (
     clean_customers,
@@ -22,6 +23,7 @@ from src.transform import (
 )
 from src.load import write_parquet, write_partitioned_parquet
 from src.load_delta import write_delta, write_partitioned_delta
+from src.incremental import write_initial_customers_delta, merge_customers_delta
 
 logger = get_logger(__name__)
 
@@ -57,11 +59,6 @@ def run_pipeline(spark, config: PipelineConfig) -> None:
 
     logger.info("Transformations completed")
 
-    sales_per_customer_df.show()
-    sales_per_country_df.show()
-    product_sales_df.show()
-    order_summary_df.show()
-
     write_partitioned_parquet(
         sales_per_customer_df,
         config.sales_per_customer_output,
@@ -83,4 +80,24 @@ def run_pipeline(spark, config: PipelineConfig) -> None:
     write_delta(order_summary_df, config.order_summary_delta_output)
 
     logger.info("Delta outputs written successfully")
+
+    write_initial_customers_delta(customers_df, config.customers_delta_output)
+    logger.info("Initial customers Delta table written")
+
+    customers_incremental_df = clean_customers(
+        read_csv(spark, config.customers_incremental_path)
+    )
+
+    merge_customers_delta(
+        spark,
+        customers_incremental_df,
+        config.customers_delta_output
+    )
+    logger.info("Customers incremental merge completed")
+
+    merged_customers_df = spark.read.format("delta").load(config.customers_delta_output)
+
+    print("=== MERGED CUSTOMERS DELTA ===")
+    merged_customers_df.orderBy("customer_id").show()
+
     logger.info("ETL pipeline finished")

@@ -55,6 +55,19 @@ Delta outputs are written to:
 
 output_delta/
 
+## Incremental Delta Load
+
+This project includes a simple incremental load example using Delta Lake merge.
+
+### Example behavior
+
+- Existing customer records are updated
+- New customer records are inserted
+
+### Delta merge target
+
+output_delta/customers/
+
 ## Tech Stack
 
 - Python
@@ -75,3 +88,7 @@ output_delta/
 - Sales per country
 - Product sales
 - Order summary
+
+```
+
+```
