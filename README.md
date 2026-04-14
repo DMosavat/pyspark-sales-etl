@@ -11,7 +11,6 @@ This project reads raw sales CSV files, transforms the data, builds a medallion 
 
 This project was built to practice real-world data engineering concepts using PySpark and Delta Lake, and to prepare for working with Azure Databricks.
 
-````md
 ## Use Case
 
 This project simulates a real-world retail data pipeline where:
@@ -56,7 +55,6 @@ This design mirrors production pipelines in Azure Databricks environments.
         │ Aggregations │
         └──────────────┘
 ```
-````
 
 ## Data Flow
 
@@ -175,24 +173,15 @@ medallion/
 - Parquet
 - Delta Lake
 
-````md
-## How to Run
+## Quick Start
 
 ```bash
+git clone https://github.com/your-username/pyspark-sales-etl.git
+cd pyspark-sales-etl
+
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
 python run.py
 ```
-````
-
-````md
-## How to Run
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python run.py
-```
-````
