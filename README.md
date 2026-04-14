@@ -20,7 +20,14 @@ pyspark-sales-etl/
 ├── data/
 │   └── sample/
 ├── output/
+├── output_delta/
 ├── src/
+│   ├── medallion.py
+│   ├── config.py
+│   ├── incremental.py
+│   ├── load_delta.py
+│   ├── read_delta.py
+│   ├── logger.py
 │   ├── session.py
 │   ├── extract.py
 │   ├── transform.py
@@ -67,6 +74,23 @@ This project includes a simple incremental load example using Delta Lake merge.
 ### Delta merge target
 
 output_delta/customers/
+
+## Medallion Architecture
+
+This project follows a simple medallion architecture:
+
+- Bronze: raw source data
+- Silver: cleaned and transformed data
+- Gold: business-ready analytics tables
+
+### Medallion Output Structure
+
+```text
+medallion/
+├── bronze/
+├── silver/
+└── gold/
+```
 
 ## Tech Stack
 

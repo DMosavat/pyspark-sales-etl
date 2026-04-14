@@ -24,6 +24,11 @@ from src.transform import (
 from src.load import write_parquet, write_partitioned_parquet
 from src.load_delta import write_delta, write_partitioned_delta
 from src.incremental import write_initial_customers_delta, merge_customers_delta
+from src.medallion import (
+    write_bronze_layer,
+    write_silver_layer,
+    write_gold_layer,
+)
 
 logger = get_logger(__name__)
 
@@ -31,12 +36,26 @@ logger = get_logger(__name__)
 def run_pipeline(spark, config: PipelineConfig) -> None:
     logger.info("Starting ETL pipeline")
 
-    customers_df = clean_customers(read_customers(spark, config.customers_path))
-    orders_df = clean_orders(read_orders(spark, config.orders_path))
-    order_items_df = read_order_items(spark, config.order_items_path)
-    products_df = read_products(spark, config.products_path)
+    raw_customers_df = read_customers(spark, config.customers_path)
+    raw_orders_df = read_orders(spark, config.orders_path)
+    raw_order_items_df = read_order_items(spark, config.order_items_path)
+    raw_products_df = read_products(spark, config.products_path)
 
-    logger.info("Source data loaded successfully")
+    logger.info("Raw source data loaded successfully")
+
+    write_bronze_layer(
+        config,
+        raw_customers_df,
+        raw_orders_df,
+        raw_order_items_df,
+        raw_products_df,
+    )
+    logger.info("Bronze layer written successfully")
+
+    customers_df = clean_customers(raw_customers_df)
+    orders_df = clean_orders(raw_orders_df)
+    order_items_df = raw_order_items_df
+    products_df = raw_products_df
 
     completed_orders_df = get_completed_orders(orders_df)
     order_items_with_total_df = add_line_total(order_items_df)
@@ -48,6 +67,16 @@ def run_pipeline(spark, config: PipelineConfig) -> None:
         customers_df
     )
 
+    write_silver_layer(
+        config,
+        customers_df,
+        completed_orders_df,
+        order_items_with_total_df,
+        order_totals_df,
+        sales_df,
+    )
+    logger.info("Silver layer written successfully")
+
     sales_per_customer_df = build_sales_per_customer(sales_df)
     sales_per_country_df = build_sales_per_country(sales_df)
     product_sales_df = build_product_sales(
@@ -57,7 +86,14 @@ def run_pipeline(spark, config: PipelineConfig) -> None:
     )
     order_summary_df = build_order_summary(sales_df)
 
-    logger.info("Transformations completed")
+    write_gold_layer(
+        config,
+        sales_per_customer_df,
+        sales_per_country_df,
+        product_sales_df,
+        order_summary_df,
+    )
+    logger.info("Gold layer written successfully")
 
     write_partitioned_parquet(
         sales_per_customer_df,

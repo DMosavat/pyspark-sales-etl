@@ -5,6 +5,7 @@ venv/
 output/*
 !output/.gitkeep
 output_delta/
+medallion/
 .DS_Store
 .vscode/
 spark-warehouse/
