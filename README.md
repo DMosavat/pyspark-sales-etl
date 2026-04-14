@@ -33,27 +33,37 @@ pyspark-sales-etl/
 └── run.py
 ```
 
+## Configuration
+
+The project uses a central configuration file for input and output paths:
+
+src/config.py
+
+## Logging
+
+The pipeline uses Python logging for execution messages.
+
+Running Tests
+
+- pytest
+
 ## Tech Stack
+
 - Python
 - PySpark
 - Parquet
 - Delta Lake (next step)
 
 ## How to Run
+
 - python3 -m venv venv
 - source venv/bin/activate
 - pip install -r requirements.txt
 - python run.py
 
 ## Sample Outputs
+
 - Sales per customer
 - Sales per country
 - Product sales
 - Order summary
-
-## Future Improvements
-- Add Delta Lake support
-- Add unit tests
-- Add Databricks notebook version
-- Add configurable input/output paths
-- Add logging
