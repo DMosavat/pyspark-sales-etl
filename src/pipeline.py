@@ -1,5 +1,7 @@
 # Orchestrate the full ETL pipeline from extract to load.
 
+from src.config import PipelineConfig
+from src.logger import get_logger
 from src.extract import (
     read_customers,
     read_orders,
@@ -20,12 +22,18 @@ from src.transform import (
 )
 from src.load import write_parquet, write_partitioned_parquet
 
+logger = get_logger(__name__)
 
-def run_pipeline(spark) -> None:
-    customers_df = clean_customers(read_customers(spark))
-    orders_df = clean_orders(read_orders(spark))
-    order_items_df = read_order_items(spark)
-    products_df = read_products(spark)
+
+def run_pipeline(spark, config: PipelineConfig) -> None:
+    logger.info("Starting ETL pipeline")
+
+    customers_df = clean_customers(read_customers(spark, config.customers_path))
+    orders_df = clean_orders(read_orders(spark, config.orders_path))
+    order_items_df = read_order_items(spark, config.order_items_path)
+    products_df = read_products(spark, config.products_path)
+
+    logger.info("Source data loaded successfully")
 
     completed_orders_df = get_completed_orders(orders_df)
     order_items_with_total_df = add_line_total(order_items_df)
@@ -46,23 +54,21 @@ def run_pipeline(spark) -> None:
     )
     order_summary_df = build_order_summary(sales_df)
 
-    print("=== SALES PER CUSTOMER ===")
+    logger.info("Transformations completed")
+
     sales_per_customer_df.show()
-
-    print("=== SALES PER COUNTRY ===")
     sales_per_country_df.show()
-
-    print("=== PRODUCT SALES ===")
     product_sales_df.show()
-
-    print("=== ORDER SUMMARY ===")
     order_summary_df.show()
 
     write_partitioned_parquet(
         sales_per_customer_df,
-        "output/sales_per_customer",
+        config.sales_per_customer_output,
         "country"
     )
-    write_parquet(sales_per_country_df, "output/sales_per_country")
-    write_parquet(product_sales_df, "output/product_sales")
-    write_parquet(order_summary_df, "output/order_summary")
+    write_parquet(sales_per_country_df, config.sales_per_country_output)
+    write_parquet(product_sales_df, config.product_sales_output)
+    write_parquet(order_summary_df, config.order_summary_output)
+
+    logger.info("Outputs written successfully")
+    logger.info("ETL pipeline finished")

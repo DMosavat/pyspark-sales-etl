@@ -12,17 +12,17 @@ def read_csv(spark: SparkSession, path: str) -> DataFrame:
     )
 
 
-def read_customers(spark: SparkSession) -> DataFrame:
-    return read_csv(spark, "data/sample/customers.csv")
+def read_customers(spark: SparkSession, path: str) -> DataFrame:
+    return read_csv(spark, path)
 
 
-def read_orders(spark: SparkSession) -> DataFrame:
-    return read_csv(spark, "data/sample/orders.csv")
+def read_orders(spark: SparkSession, path: str) -> DataFrame:
+    return read_csv(spark, path)
 
 
-def read_order_items(spark: SparkSession) -> DataFrame:
-    return read_csv(spark, "data/sample/order_items.csv")
+def read_order_items(spark: SparkSession, path: str) -> DataFrame:
+    return read_csv(spark, path)
 
 
-def read_products(spark: SparkSession) -> DataFrame:
-    return read_csv(spark, "data/sample/products.csv")
+def read_products(spark: SparkSession, path: str) -> DataFrame:
+    return read_csv(spark, path)
