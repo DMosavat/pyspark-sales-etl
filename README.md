@@ -176,7 +176,7 @@ medallion/
 ## Quick Start
 
 ```bash
-git clone https://github.com/your-username/pyspark-sales-etl.git
+git clone https://github.com/DMosavat/pyspark-sales-etl.git
 cd pyspark-sales-etl
 
 python3 -m venv venv
